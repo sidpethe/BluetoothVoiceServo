@@ -13,7 +13,7 @@ Key= ASCII char
 1. "position 180 degrees" - Sends key '6'
 
 ### Speed Commands- 
-2. "Valet Mode" - Sends key '7'
+1. "Valet Mode" - Sends key '7'
 2. "Ludicrous Mode" - Sends key '8'
 2. "Light Speed Ahead" - Sends key '9'
 ## Screenshot
