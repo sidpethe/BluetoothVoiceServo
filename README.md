@@ -19,7 +19,7 @@ Key= ASCII char
 ## Screenshot
 Below is a screenshot of the app layout and elements.
 <div align="center">
-<img src="Screenshots/MainActivity.jpg" scale="0.25"/>
+<img src="Screenshots/MainActivity.jpg" width="200px"/>
 <p> Main Activity with 2 slider inputs, a voice button and special switch for Dance Mode. </p>
 </div>
 ## Acknowledgements
