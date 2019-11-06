@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="defaultBt">hc01.com HC-05</string>
+    <string name="BtNotFound">Auto Connect Failed - Default Bluetooth Device not found</string>
+    <string name="chooseNewDevice">Connect to New Device?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="selectDevice">Select device</string>
+</resources>
