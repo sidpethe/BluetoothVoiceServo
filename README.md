@@ -1,9 +1,9 @@
 # BluetoothVoiceServo
 Android Application code for voice controlled servo motor via Bluetooth. 
 
-##Voice Command list:-
+## Voice Command list:-
 Key= ASCII char
-###Position Commands-
+### Position Commands-
 "position 0 degrees" - Sends key '0'
 "position 30 degrees" - Sends key '1'
 "position 60 degrees" - Sends key '2'
@@ -12,7 +12,7 @@ Key= ASCII char
 "position 150 degrees" - Sends key '5'
 "position 180 degrees" - Sends key '6'
 
-###Speed Commands- 
+### Speed Commands- 
 "Valet Mode" - Sends key '7'
 "Ludicrous Mode" - Sends key '8'
 "Light Speed Ahead" - Sends key '9'
