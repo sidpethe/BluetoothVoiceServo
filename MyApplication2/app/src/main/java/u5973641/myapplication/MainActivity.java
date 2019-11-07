@@ -1,49 +1,45 @@
-package com.example.u5973641.myapplication;
+package u5973641.myapplication;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-//import android.widget.CompoundButton;
 import android.speech.RecognizerIntent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
-//import android.widget.ToggleButton;
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE;
 import static android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
-public class MainActivity extends Activity {
-    private static final int REQUEST_ENABLE_BT = RESULT_FIRST_USER;
+public class MainActivity extends FragmentActivity implements NoticeDialogFragment.NoticeDialogListener{
+    private static final int REQUEST_ENABLE_BT = 2;
+    private static final int REQUEST_BT_NAME = 3;
+    private static final int RESULT_BT_NAME = 3;
+    private static final String EXTRA_MESSAGE="com.example.u5973641.myapplication.MESSAGE";
     private BluetoothSocket sock;
     private BluetoothAdapter bluedaat = BluetoothAdapter.getDefaultAdapter();
     private BluetoothDevice defaultBlue=null;
     private Intent enableBtIntent = new Intent(ACTION_REQUEST_ENABLE);
     private int currentSpeed=0;
     private int currentPos=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +51,13 @@ public class MainActivity extends Activity {
         else {
             btEnabled();
         }
+        ImageButton im4=findViewById(R.id.imageButton4);
+        im4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btEnabled();
+            }
+        });
     }
 
     @Override
@@ -92,7 +95,7 @@ public class MainActivity extends Activity {
             List<String> results = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
-            spokenText.toLowerCase();
+            spokenText=spokenText.toLowerCase();
             switch (spokenText) {
                 case ("position 0 degrees"):
                     currentPos=0;
@@ -138,41 +141,73 @@ public class MainActivity extends Activity {
                     Toast.makeText(this, spokenText, Toast.LENGTH_SHORT).show();
             }
         }
-        if (requestCode==REQUEST_ENABLE_BT){
-            if (resultCode==RESULT_CANCELED){
-                Toast.makeText(this,"Bluetooth must be enabled",Toast.LENGTH_LONG).show();
-                startActivityForResult(enableBtIntent,REQUEST_ENABLE_BT);
+        if (requestCode==REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Bluetooth must be enabled", Toast.LENGTH_LONG).show();
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
-            if (resultCode==RESULT_OK){
+            if (resultCode == RESULT_OK)
                 btEnabled();
-            }
         }
+        if(requestCode==REQUEST_BT_NAME)
+            SetNewBtDevice(data.getStringExtra(EXTRA_MESSAGE));
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void SetNewBtDevice(String newDeviceName){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.defaultBt), newDeviceName);
+        editor.apply();
+
+        btEnabled();
+    }
+
+    public void showNoticeDialog() {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog = new NoticeDialogFragment();
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+        Intent intentEditBtDeviceActivity=new Intent(this, EditBtDeviceActivity.class);
+        startActivityForResult(intentEditBtDeviceActivity,RESULT_BT_NAME);
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+
     }
 
     private void btEnabled(){
         final Set<BluetoothDevice> pairedDevices = bluedaat.getBondedDevices();
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        String defaultBtName=sharedPref.getString(getString(R.string.defaultBt),getString(R.string.defaultBt));
         // If there are paired devices
         if ((pairedDevices.size()) > 0) {
             // Loop through paired devices
             for (BluetoothDevice HC5 : pairedDevices) {
-                if(HC5.getName().equals(R.string.defaultBt)) {
+                if(HC5.getName().equals(defaultBtName)) {
                     defaultBlue = HC5;
                 }
             }
             if(defaultBlue==null){
-                Toast.makeText(this,R.string.BtNotFound,Toast.LENGTH_LONG).show();
-                //defaultBlue= (BluetoothDevice)pairedDevices.toArray()[1];
-
-
-                // Save a new device as the default device
-                //SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                //SharedPreferences.Editor editor = sharedPref.edit();
-                //editor.putInt(getString(R.string.defaultBt), newHighScore);
-                //editor.apply();
+                Toast.makeText(this,defaultBtName+getString(R.string.BtDeviceNotPaired),Toast.LENGTH_LONG).show();
             }
             else ConnectCall(defaultBlue);
         }
+        ImageButton imb2=findViewById(R.id.imageButton2);
+        imb2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showNoticeDialog();
+            }
+        });
 
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener=new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -228,12 +263,12 @@ public class MainActivity extends Activity {
             Toast.makeText(this,"Connected",Toast.LENGTH_LONG).show();
         }
         else {
-            Toast.makeText(this,"Unable to Connect",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,getString(R.string.BtNotFound),Toast.LENGTH_LONG).show();
         }
     }
     public void SendSpeed(int speed) {
         ConnectedThread blue = new ConnectedThread(sock);
-        Toast.makeText(this, "Sending Speed " + String.valueOf(speed),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Sending Speed " + (speed),Toast.LENGTH_SHORT).show();
         switch (speed) {
             case (0):
                 blue.write('7');//speed 1
@@ -391,54 +426,3 @@ public class MainActivity extends Activity {
     }
 
 }
-
-/* Working on showing a dialog with paired/available devices to connect
-public static class ChooseFromPairedDevicesDialog extends DialogFragment{
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.chooseNewDevice)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
-        // Create the AlertDialog object and return it
-        return builder.create();
-    }
-
-
-}
-public static class ChooseWhichPairedDevicesDialog extends DialogFragment{
-    private BluetoothAdapter bluedaat = BluetoothAdapter.getDefaultAdapter();
-    final Set<BluetoothDevice> pairedDevices = bluedaat.getBondedDevices();
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        */
-/* Create a list of paired Devices by name and show first few choices in Dialog
-        for(BluetoothDevice btDevice:pairedDevices){
-            pairedDevicesNames.add(btDevice.getName());
-        }
-
-         *//*
-
-        builder.setTitle(R.string.selectDevice)
-                .setItems(R.array.pairedDevices, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // The 'which' argument contains the index position
-                        // of the selected item
-                    }
-                });
-        return builder.create();
-    }
-
-
-}
-*/

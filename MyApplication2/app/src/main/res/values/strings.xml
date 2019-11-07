@@ -1,9 +1,14 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Bluetooth Voice Servo</string>
     <string name="defaultBt">hc01.com HC-05</string>
     <string name="BtNotFound">Auto Connect Failed - Default Bluetooth Device not found</string>
-    <string name="chooseNewDevice">Connect to New Device?</string>
+    <string name="chooseNewDevice">Change Bluetooth Device?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="selectDevice">Select device</string>
+    <string name="enterBtDeviceName">Enter Bt Device Name</string>
+    <string name="button_set">Set</string>
+    <string name="activity_title_editbtdevice">Change Bt Device</string>
+    <string name="BtDeviceNotPaired">" is not paired. Please do that first in settings."</string>
+    <string name="exitMessage">Exiting Application</string>
 </resources>
