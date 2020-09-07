@@ -22,5 +22,6 @@ Below is a screenshot of the app layout and elements.
 <img src="Screenshots/MainActivity.jpg" width="200px"/>
 <p> Main Activity with 2 slider inputs, a voice button and special switch for Dance Mode. </p>
 </div>
+
 ## Acknowledgements
 This application was built as part of the coursework for ENGN8537:Embedded Systems and Real Time DSP major project.  
